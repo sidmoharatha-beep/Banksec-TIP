@@ -2,7 +2,7 @@
 
 Advanced Threat Intelligence Platform (TIP)
 
-## Week 1 Completed
+## Completed Successfully
 - Kali Linux setup
 - MongoDB installation
 - Threat feed ingestion
