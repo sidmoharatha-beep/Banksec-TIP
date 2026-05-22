@@ -1,57 +1,37 @@
+import subprocess
 import sys
 import os
+from datetime import datetime
 
+# Fix import path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import subprocess
-from datetime import datetime
 from database.mongo_handler import collection
 
-# Track already blocked IPs (prevents duplicate rules)
+print("[*] Starting Firewall Enforcer...")
+
 blocked_ips = set()
 
-# Log file path
-LOG_FILE = "logs/firewall.log"
+try:
+    threats = collection.find()
 
-def log_action(message):
-    with open(LOG_FILE, "a") as log:
-        log.write(f"{datetime.now()} - {message}\n")
+    for threat in threats:
+        ip = threat.get("indicator")
 
-def block_ip(ip):
-    try:
-        # Check if IP already blocked (basic check)
-        if ip in blocked_ips:
-            return
-
-        # Apply firewall rule
-        command = ["iptables", "-A", "INPUT", "-s", ip, "-j", "DROP"]
-        subprocess.run(command, check=True)
+        # Skip if no IP or already blocked
+        if not ip or ip in blocked_ips:
+            continue
 
         blocked_ips.add(ip)
 
+        command = f"iptables -A INPUT -s {ip} -j DROP"
+        subprocess.run(command, shell=True)
+
         print(f"[+] Blocked IP: {ip}")
-        log_action(f"Blocked IP: {ip}")
 
-    except subprocess.CalledProcessError:
-        print(f"[!] Failed to block IP: {ip}")
-        log_action(f"ERROR blocking IP: {ip}")
+        # ✅ Logging
+        with open("blocked_ips.log", "a") as f:
+            f.write(f"{datetime.now()} - Blocked: {ip}\n")
 
-def main():
-    print("[*] Starting Firewall Enforcer...")
-
-    try:
-        # Fetch high-risk threats
-        threats = collection.find({"risk_score": {"$gt": 80}})
-
-        for threat in threats:
-            ip = threat.get("indicator")
-
-            if ip:
-                block_ip(ip)
-
-    except Exception as e:
-        print(f"[!] Error: {e}")
-        log_action(f"ERROR: {str(e)}")
-
-if __name__ == "__main__":
-    main()
+except Exception as e:
+    print("Error:", e)
