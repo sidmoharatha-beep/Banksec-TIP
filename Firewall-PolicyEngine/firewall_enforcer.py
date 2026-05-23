@@ -35,3 +35,16 @@ try:
 
 except Exception as e:
     print("Error:", e)
+
+import json
+from datetime import datetime
+
+log = {
+    "event": "IP_BLOCKED",
+    "ip": ip,
+    "risk_score": threat.get("risk_score", 0),
+    "timestamp": datetime.now().isoformat()
+}
+
+with open("/home/sidharth/Banksec-TIP/firewall_events.json", "a") as f:
+    f.write(json.dumps(log) + "\n")
