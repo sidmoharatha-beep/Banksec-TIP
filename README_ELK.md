@@ -79,3 +79,37 @@ Banksec-TIP/
 
 
 
+---
+
+# Updated SIEM Architecture
+
+The project architecture was updated to align with a Filebeat-based SIEM pipeline.
+
+## Final Architecture
+
+MongoDB → IOC Extractor → firewall_events.json → Filebeat → Elasticsearch → Kibana
+
+---
+
+# Kibana Dashboard Features
+
+The SIEM dashboard now supports:
+
+- Real-time event monitoring
+- Blocked IP visualization
+- Threat timeline analysis
+- Risk score analytics
+- Top risky IP tracking
+- Live security event monitoring
+
+---
+
+# Filebeat Integration
+
+Filebeat is used to ship security event logs into Elasticsearch.
+
+Advantages:
+- Realistic SIEM architecture
+- Centralized log ingestion
+- Better scalability
+- Real-time event streaming
