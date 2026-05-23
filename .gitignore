@@ -2,3 +2,5 @@
 __pycache__/
 *.pyc
 venv/
+firewall_events.json
+blocked_ips.log
