@@ -6,7 +6,7 @@
 
 ## Overview
 
-This branch implements Week 2 & 4 of the Advanced Threat Intelligence Platform (TIP).
+This branch implements "ELK Stack & Visualization" of the Advanced Threat Intelligence Platform (TIP).
 It takes the normalised threat data produced by the osint-MongoDB branch and makes it
 visible through a full SIEM stack — Elasticsearch, Kibana, and Filebeat.
 
