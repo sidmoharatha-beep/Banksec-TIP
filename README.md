@@ -2,7 +2,7 @@
 **Assigned to: Sidharth Ranjan Moharatha**
 
 ## Overview
-This branch handles **Week 3 & 4** of the project:
+This branch handles **Firewall Policy Engine** of the project:
 - Extract active threat IPs from MongoDB
 - Apply iptables DROP rules dynamically
 - Log all blocked IPs to `blocked_ips.log` and `firewall_events.json`
