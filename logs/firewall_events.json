@@ -1,0 +1,3 @@
+{"event":"IP_BLOCKED","ip":"192.168.1.5","risk_score":90,"country":"Russia"}
+{"event":"MALWARE_DETECTED","ip":"192.168.1.7","risk_score":75,"country":"China"}
+{"event":"DDOS_ATTEMPT","ip":"192.168.1.9","risk_score":95,"country":"Iran"}
