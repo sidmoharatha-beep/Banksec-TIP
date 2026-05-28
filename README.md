@@ -6,7 +6,7 @@
 
 ## Overview
 
-This branch implements **Week 1 & 2** of the Advanced Threat Intelligence Platform (TIP).
+This branch implements **OSINT & MongoDB** of the Advanced Threat Intelligence Platform (TIP).
 It collects live threat intelligence from 4 OSINT sources, normalises and deduplicates
 the data, and stores actionable IOCs (Indicators of Compromise) in MongoDB.
 
