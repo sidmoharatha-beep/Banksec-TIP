@@ -1,119 +1,57 @@
-## Banksec-TIP: Threat Intelligence & SIEM Pipeline
+# BankSec-TIP — Firewall Policy Engine Branch
+**Assigned to: Sidharth Ranjan Moharatha**
 
 ## Overview
-Banksec-TIP is a cybersecurity project that builds a mini SIEM pipeline to detect, process, and visualize malicious indicators (IOCs) such as IP addresses.
+This branch handles **Week 3 & 4** of the project:
+- Extract active threat IPs from MongoDB
+- Apply iptables DROP rules dynamically
+- Log all blocked IPs to `blocked_ips.log` and `firewall_events.json`
+- Rollback mechanism for false positives
 
-The system integrates MongoDB, Python scripts, Filebeat, Elasticsearch, and Kibana to automate threat detection and monitoring.
+## Pipeline
+```
+MongoDB (threats)
+      ↓
+Firewall-PolicyEngine/ioc_extractor.py  →  firewall_events.json
+      ↓
+Firewall-PolicyEngine/firewall_enforcer.py  →  iptables + blocked_ips.log
+      ↓
+[ELK branch picks up firewall_events.json via Filebeat]
+```
 
-## Architecture
+## Setup
 
-MongoDB (IOC Feed)
-↓
-IOC Extractor (Python)
-↓
-Firewall Logging (JSON)
-↓
-Filebeat
-↓
-Elasticsearch
-↓
-Kibana Dashboard
-
-## Tech Stack
-
-- Python (IOC extraction, automation)
-- MongoDB (IOC storage)
-- Filebeat (log shipping)
-- Elasticsearch (data storage & search)
-- Kibana (visualization)
-- Linux (Kali)
-
-## Features
-
-- Extracts malicious IPs from database
-- Logs firewall events in real-time
-- Ships logs to Elasticsearch via Filebeat
-- Visualizes logs in Kibana
-- End-to-end SIEM pipeline
-
-## Project Structure
-
-Banksec-TIP/
-│
-├── database/
-│ └── mongo_handler.py
-│
-├── Firewall-PolicyEngine/
-│ ├── ioc_extractor.py
-│ └── firewall_enforcer.py
-│
-├── firewall_events.json
-├── blocked_ips.log
-└── README.md
-
-## Setup Instructions
-
-### 1. Clone Repo
 ```bash
-git clone https://github.com/sidmoharatha-beep/Banksec-TIP.git
+# 1. Clone and switch branch
+git clone <repo-url>
 cd Banksec-TIP
+git checkout firewall-policyengine
 
-### 2. Setup Virtual Environment
-
+# 2. Virtual environment
 python3 -m venv venv
 source venv/bin/activate
-pip install pymongo
+pip install -r requirements.txt
 
-### 3. Start Elasticsearch & Kibana
+# 3. Configure keys
+cp .env.example .env
+# Edit .env
 
-sudo systemctl start elasticsearch
-sudo systemctl start kibana
+# 4. Start MongoDB
+sudo systemctl start mongod
 
-### 4. Run IOC Extractor
+# 5. Run enforcer (requires sudo for iptables)
+sudo python main.py
 
-python ioc_extractor.py
+# To rollback a specific IP:
+# python -c "from Firewall-PolicyEngine.firewall_enforcer import rollback_ip; rollback_ip('1.2.3.4')"
+```
 
-### 5. View in Kibana
+## API Key Locations
+| Key | File | Variable Name |
+|-----|------|---------------|
+| MongoDB URI | `.env` | `MONGO_URI` |
 
-http://localhost:5601
-
-## Sample Log
-
-{
-  "event": "IP_BLOCKED",
-  "ip": "8.8.8.8",
-  "risk_score": 90,
-  "timestamp": "2026-05-23T04:45:01"
-}
-
-## Use Case
-
- Detect malicious IPs from OSINT feeds
-
- Automate firewall logging
-
- Monitor threats in real-time
-
- Demonstrate SIEM pipeline for academic/project use
-
-## Contributors
-
- Adity Tamakhuwala
-
- Sidharth Ranjan Moharatha
-
- Chayan Soni
-
-
-## Future Improvements
-
-  Auto firewall blocking (iptables)
-
-  Kibana dashboards & alerts
-
-  Integration with live threat feeds
-
-## Conclusion
-
-This project demonstrates a working SIEM pipeline using open-source tools, 
-providing hands-on experience in threat detection, log management, and security monitoring.
+## Technologies
+- Python 3.10+, PyMongo, subprocess
+- Linux iptables
+- Kali Linux
