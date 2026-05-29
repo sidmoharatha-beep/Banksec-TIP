@@ -2,13 +2,16 @@ filebeat.inputs:
   - type: log
     enabled: true
     paths:
-      - /logs/firewall_events.json
+  - /logs/firewall.log
     json.keys_under_root: true
     json.add_error_key: true
 
 output.elasticsearch:
   hosts: ["elasticsearch:9200"]
   index: "firewall-events-%{+yyyy.MM.dd}"
+
+setup.template.name: "banksec-threats"
+setup.template.pattern: "banksec-threats-*"
 
 setup.kibana:
   host: "kibana:5601"
