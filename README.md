@@ -14,6 +14,37 @@ Every blocked IP from the Firewall-PolicyEngine branch is streamed into Elastics
 via Filebeat and visualised on a real-time Kibana dashboard for SOC analysts.
 
 ---
+## ELK Data Flow Architecture
+
+The ELK visualization layer provides centralized visibility into collected threat intelligence.
+
+```text
+OSINT Feeds
+     │
+     ▼
+ MongoDB
+     │
+     ▼
+Elasticsearch
+     │
+     ▼
+  Kibana
+```
+
+### Data Flow
+
+1. OSINT feeds (AlienVault OTX, AbuseIPDB, VirusTotal, Shodan) collect threat indicators.
+2. Threat indicators are normalized and stored in MongoDB.
+3. Elasticsearch indexes threat data for efficient searching and aggregation.
+4. Kibana visualizes threat intelligence through dashboards and charts.
+
+### Dashboard Objectives
+
+* Threat source distribution
+* Malicious IP tracking
+* IOC trend analysis
+* Risk score visualization
+* Security event monitoring
 
 ## Pipeline Architecture
 
