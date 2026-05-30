@@ -32,6 +32,12 @@ Shodan          ──┘    ioc_extractor.py
 ```
 
 ---
+## Required Environment Variables
+
+- SHODAN_API_KEY
+- VIRUSTOTAL_API_KEY
+- OTX_API_KEY
+- ABUSEIPDB_API_KEY
 
 ## OSINT Sources
 
