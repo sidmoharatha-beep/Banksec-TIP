@@ -36,20 +36,27 @@ Shodan          ──┘    ioc_extractor.py
 
 The following API keys are required for full OSINT feed integration:
 
-SHODAN_API_KEY
-VIRUSTOTAL_API_KEY
-OTX_API_KEY
-ABUSEIPDB_API_KEY
-Configuration
+- `SHODAN_API_KEY`
+- `VIRUSTOTAL_API_KEY`
+- `OTX_API_KEY`
+- `ABUSEIPDB_API_KEY`
 
-Create a .env file in the project root and add your API keys:
+### Configuration
 
+Create a `.env` file in the project root and add:
+
+```env
 SHODAN_API_KEY=your_key_here
 VIRUSTOTAL_API_KEY=your_key_here
 OTX_API_KEY=your_key_here
 ABUSEIPDB_API_KEY=your_key_here
+```
 
-Security Note: Never commit the .env file to GitHub. Ensure it is listed in .gitignore.
+### Security Note
+
+- Never commit the `.env` file to GitHub.
+- Ensure `.env` is listed in `.gitignore`.
+- Keep all API keys private.
 
 ---
 ## OSINT Sources
