@@ -1,6 +1,6 @@
 # BankSec-TIP — ELK Stack & Visualization Branch
 **Assigned to: Aditya Tamakhuwala**
-**Infotact Technical Internship Program | Finance & Banking Project**
+**Infotact Technical Internship Program | Finance & Banking Project***
 
 ---
 
