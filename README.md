@@ -315,6 +315,13 @@ git commit -m "test: verify 994 IPs blocked with matching log counts"
 - GitHub Actions lint workflow
 
 ---
+## Future Enhancements
 
+Planned improvements for the policy enforcement engine:
+
+- Rule expiration and automatic cleanup
+- Threat severity weighting
+- Automated rollback suggestions
+- Firewall rule analytics and reporting
 *Part of the Infotact Technical Internship Program — Finance & Banking Track*
 *Bengaluru, Karnataka | 2026*
