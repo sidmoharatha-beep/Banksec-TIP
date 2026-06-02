@@ -93,7 +93,16 @@ Banksec-TIP/
 ├── .gitignore
 └── README.md
 ```
+---
+## MongoDB Collections
 
+The platform stores threat intelligence data in the following collections:
+
+- raw_iocs
+- enriched_iocs
+- threats
+
+These collections support ingestion, enrichment, and IOC extraction workflows.
 ---
 
 ## Setup & Installation
