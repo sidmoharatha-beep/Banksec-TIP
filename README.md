@@ -70,6 +70,16 @@ Banksec-TIP/ ├── feeds/ │ ├── alienvault.py │ ├── abuseipd
 - osint-MongoDB branch must have run first — MongoDB must have threat data
 
 ---
+## Kibana Dashboards
+
+The ELK module provides the following visualizations:
+
+- IOC Trend Monitoring
+- Threat Source Analysis
+- High-Risk Indicator Visualization
+
+These dashboards help SOC analysts quickly identify emerging threats and attack patterns.
+---
 
 ## Setup & Installation
 
