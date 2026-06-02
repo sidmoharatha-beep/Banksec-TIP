@@ -8,7 +8,7 @@
 
 This branch implements **Week 3 & 4** of the Advanced Threat Intelligence Platform (TIP).
 It reads the normalised threat data produced by the **osint-MongoDB branch** from MongoDB
-and dynamically enforces network-level firewall rules using Linux iptables.
+and dynamically enforces network-level firewall rulees using Linux iptables.
 
 Every malicious IP with a risk score ≥ 70 is automatically blocked at the OS level,
 with a complete audit trail written to structured JSON logs for the **ELKStack-Visualization
