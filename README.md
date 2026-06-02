@@ -30,8 +30,17 @@ Shodan          ──┘    ioc_extractor.py
                   ↓                     ↓
         Firewall-PolicyEngine    ELKStack-Visualization
 ```
+---
+
+## Supported Threat Feeds
+
+- AlienVault OTX
+- AbuseIPDB
+- VirusTotal
+- Shodan
 
 ---
+
 ## Required Environment Variables
 
 The following API keys are required for full OSINT feed integration:
