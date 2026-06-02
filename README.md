@@ -221,7 +221,11 @@ Filebeat watches: firewall_events.json
 Ships to: Elasticsearch index firewall-events-YYYY.MM.DD
 
 ---
+### Elasticsearch Indexing
 
+Threat records are indexed for fast search and visualization.
+
+---
 ## Verify Elasticsearch Data
 
 ```bash
