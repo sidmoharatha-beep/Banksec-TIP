@@ -1,3 +1,4 @@
+# Filebeat configuration for BankSec-TIP ELK ingestion pipeline
 filebeat.inputs:
   - type: log
     enabled: true
