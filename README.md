@@ -1,6 +1,6 @@
 # BankSec-TIP — Firewall Policy Engine Branch
 **Assigned to: Sidharth Ranjan Moharatha**
-**Infotact Technical Internship Program | Finance & Banking Project**h
+**Infotact Technical Internship Program | Finance & Banking Project**
 
 -----------
 
