@@ -1,9 +1,12 @@
-# Filebeat configuration for BankSec-TIP ELK ingestion pipeline
+# filebeat.yml — BankSec-TIP ELK Stack branch
+# FIX: corrected YAML indentation on 'paths' (was misaligned, causing Filebeat to ignore log files)
+# FIX: path now matches the volume mount in docker-compose.yml (/logs/firewall_events.json)
+
 filebeat.inputs:
   - type: log
     enabled: true
     paths:
-  - /logs/firewall.log
+      - /logs/firewall_events.json
     json.keys_under_root: true
     json.add_error_key: true
 

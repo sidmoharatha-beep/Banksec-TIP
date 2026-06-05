@@ -2,6 +2,7 @@ version: "3.8"
 
 # BankSec-TIP  –  ELK Stack + MongoDB
 # Aditya Tamakhuwala
+# FIX: Filebeat volume mount now uses firewall_events.json (matches filebeat.yml path)
 
 services:
 
@@ -50,6 +51,7 @@ services:
     user: root
     volumes:
       - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      # FIX: mount path matches the log file written by firewall_enforcer.py
       - ./firewall_events.json:/logs/firewall_events.json:ro
     depends_on:
       elasticsearch:

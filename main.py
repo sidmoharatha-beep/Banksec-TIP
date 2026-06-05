@@ -10,30 +10,32 @@ Usage:
     python main.py
 """
 
+from logs.logs import get_logger
+
+logger = get_logger("main")
+
 
 def run():
-    print("=" * 60)
-    print("  BankSec-TIP  |  ELK Stack Visualization Pipeline")
-    print("=" * 60)
+    logger.info("=" * 60)
+    logger.info("  BankSec-TIP  |  ELK Stack Visualization Pipeline")
+    logger.info("=" * 60)
 
-    # 1. Direct MongoDB → Elasticsearch sync
     try:
         from elastic_sync import sync
         sync()
     except Exception as e:
-        print(f"[!] Elasticsearch sync error: {e}")
+        logger.error("Elasticsearch sync error: %s", e)
 
-    # 2. Write firewall_events.json (for Filebeat)
     try:
         from filebeat_logger import write_events
         write_events()
     except Exception as e:
-        print(f"[!] Filebeat logger error: {e}")
+        logger.error("Filebeat logger error: %s", e)
 
-    print("=" * 60)
-    print("  ELK pipeline complete.")
-    print("  Open Kibana at http://localhost:5601")
-    print("=" * 60)
+    logger.info("=" * 60)
+    logger.info("  ELK pipeline complete.")
+    logger.info("  Open Kibana at http://localhost:5601")
+    logger.info("=" * 60)
 
 
 if __name__ == "__main__":

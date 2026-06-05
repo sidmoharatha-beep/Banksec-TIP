@@ -1,44 +1,57 @@
 """
-filebeat_logger.py  –  Write firewall_events.json for Filebeat → Kibana
-Aditya Tamakhuwala  |  ELK Stack Branch
+filebeat_logger.py  –  BankSec-TIP ELK Stack & Visualization Branch
+Aditya Tamakhuwala
 
-Reads from MongoDB threats collection and writes JSON log lines to
+Reads MongoDB threats collection and writes JSON log lines to
 firewall_events.json.  Filebeat then ships these to Elasticsearch.
 
 Pipeline position:
   MongoDB (threats)  →  filebeat_logger.py  →  firewall_events.json
-                      →  Filebeat  →  Elasticsearch  →  Kibana
+                     →  Filebeat  →  Elasticsearch  →  Kibana
+
+Fix applied:
+  - Uses datetime.now(timezone.utc) instead of deprecated datetime.utcnow()
+  - Skips threats already marked as false_positive
+  - Uses structured logger instead of print()
 """
 
 import os
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from database.mongo_handler import threats_collection
+from logs.logs import get_logger
 
-# Write logs to the project root (Filebeat watches this path)
-LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                        "firewall_events.json")
+logger = get_logger(__name__)
+
+LOG_PATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "firewall_events.json"
+)
 
 
 def write_events() -> int:
-    """Write one JSON log line per threat to firewall_events.json."""
-    print(f"[Filebeat Logger] Writing events to {LOG_PATH} ...")
+    """Write one JSON log line per active threat to firewall_events.json."""
+    logger.info("Filebeat Logger: writing events to %s ...", LOG_PATH)
     written = 0
 
     with open(LOG_PATH, "a") as f:
-        for threat in threats_collection.find({"status": "active"}):
+        for threat in threats_collection.find({
+            "status": "active",
+            "false_positive": {"$ne": True},   # skip false positives
+        }):
             event = {
-                "event":      "IP_BLOCKED",
-                "ip":         threat.get("indicator", ""),
-                "risk_score": threat.get("risk_score", 0),
-                "source":     threat.get("source", ""),
-                "country":    threat.get("country", ""),
-                "timestamp":  datetime.utcnow().isoformat(),
+                "event":         "IP_BLOCKED",
+                "ip":            threat.get("indicator", ""),
+                "risk_score":    threat.get("risk_score", 0),
+                "source":        threat.get("source", ""),
+                "country":       threat.get("country", ""),
+                "false_positive": threat.get("false_positive", False),
+                "timestamp":     datetime.now(timezone.utc).isoformat(),
             }
             f.write(json.dumps(event) + "\n")
             written += 1
 
-    print(f"[Filebeat Logger] Done – {written} events written.\n")
+    logger.info("Filebeat Logger: done — %d events written.", written)
     return written
 
 
