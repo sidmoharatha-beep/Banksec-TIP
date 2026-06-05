@@ -2,17 +2,24 @@
 **Assigned to: Sidharth Ranjan Moharatha**
 **Infotact Technical Internship Program | Finance & Banking Project**
 
------------
+---
 
 ## Overview
 
-This branch implements **Week 3 & 4** of the Advanced Threat Intelligence Platform (TIP).
+This branch implements **Weeks 3 & 4** of the Advanced Threat Intelligence Platform (TIP).
 It reads the normalised threat data produced by the **osint-MongoDB branch** from MongoDB
 and dynamically enforces network-level firewall rulees using Linux iptables.
 
 Every malicious IP with a risk score ≥ 70 is automatically blocked at the OS level,
 with a complete audit trail written to structured JSON logs for the **ELKStack-Visualization
 branch** to pick up via Filebeat.
+
+**Week 4 additions:**
+- `rollback.py` — SOC analyst false-positive recovery CLI tool
+- Daemon mode — continuous polling via `--daemon` flag
+- Centralised logging (`logs/logs.py`) replacing all `print()` calls
+- MongoDB status tracking (`blocked`, `false_positive`) for Kibana visibility
+- Timezone-aware timestamps (UTC ISO 8601)
 
 ---
 
@@ -21,14 +28,21 @@ branch** to pick up via Filebeat.
 ```
 osint-MongoDB branch
         ↓
-MongoDB: threats collection (999 active threats)
+MongoDB: threats collection (active threats)
         ↓
 Firewall-PolicyEngine/ioc_extractor.py
-        ↓  (reads active threat count)
+        ↓  (reports active threat count)
 Firewall-PolicyEngine/firewall_enforcer.py
         ↓              ↓
   iptables DROP    firewall_events.json  →  Filebeat  →  Kibana
   blocked_ips.log  (audit trail)
+
+SOC Analyst False Positive Flow:
+  sudo python rollback.py <IP>
+        ↓
+  iptables -D (remove rule)  +  MongoDB status → "false_positive"
+        ↓
+  Kibana dashboard updated on next ELK sync
 ```
 
 ---
@@ -38,23 +52,24 @@ Firewall-PolicyEngine/firewall_enforcer.py
 ```
 Banksec-TIP/
 ├── Firewall-PolicyEngine/
-│   ├── firewall_enforcer.py    # Applies iptables rules, writes logs
-│   └── ioc_extractor.py        # Reads MongoDB, counts active threats
+│   ├── firewall_enforcer.py    # Applies iptables rules, rollback, daemon mode
+│   └── ioc_extractor.py        # Reads MongoDB, reports threat counts
 ├── feeds/
-│   ├── alienvault.py           # AlienVault OTX feed (shared)
-│   ├── abuseipdb.py            # AbuseIPDB feed (shared)
-│   ├── virustotal.py           # VirusTotal enrichment (shared)
-│   ├── shodan_feed.py          # Shodan scanner (shared)
+│   ├── alienvault.py
+│   ├── abuseipdb.py
+│   ├── virustotal.py
 │   └── __init__.py
 ├── database/
-│   ├── mongo_handler.py        # MongoDB connection (shared)
+│   ├── mongo_handler.py        # MongoDB connection + indexes
 │   └── __init__.py
 ├── logs/
-│   ├── logs.py                 # Centralised logging config
+│   ├── logs.py                 # Centralised logging config (Week 4)
+│   ├── app.log                 # Runtime log (git-ignored)
 │   └── __init__.py
-├── main.py                     # Pipeline entry point
+├── main.py                     # Pipeline entry point (supports --daemon)
+├── rollback.py                 # SOC analyst false-positive recovery tool (Week 4)
 ├── requirements.txt
-├── .env.example                # API key template
+├── .env.example
 ├── .gitignore
 └── README.md
 ```
@@ -63,7 +78,7 @@ Banksec-TIP/
 
 ## Prerequisites
 
-- Kali Linux (or Ubuntu 22.04+)
+- Kali Linux or Ubuntu 22.04+
 - Python 3.10+
 - MongoDB running
 - **osint-MongoDB branch must have run first** (MongoDB must have threat data)
@@ -81,39 +96,15 @@ cd Banksec-TIP
 git checkout Firewall-PolicyEngine
 ```
 
-If already cloned:
-```bash
-cd ~/Banksec-TIP
-git checkout Firewall-PolicyEngine
-git pull origin Firewall-PolicyEngine
-```
-
-### Step 2 — Install MongoDB
-
-```bash
-sudo apt update
-sudo apt install -y mongodb
-sudo systemctl start mongodb
-sudo systemctl enable mongodb
-
-# Verify MongoDB is running
-sudo systemctl status mongodb
-```
-
-### Step 3 — Create Virtual Environment
+### Step 2 — Create Virtual Environment
 
 ```bash
 python3 -m venv venv
 source venv/bin/activate
-```
-
-### Step 4 — Install Dependencies
-
-```bash
 pip install -r requirements.txt
 ```
 
-### Step 5 — Configure Environment Variables
+### Step 3 — Configure Environment Variables
 
 ```bash
 cp .env.example .env
@@ -129,25 +120,53 @@ MONGO_DB=threat_intelligence
 
 > ⚠️ **Never commit the `.env` file.** It is already in `.gitignore`.
 
-### Step 6 — Run osint-MongoDB branch first
+### Step 4 — Run osint-MongoDB branch first
 
-Make sure MongoDB has threat data before running the enforcer:
+Make sure MongoDB has threat data:
 
 ```bash
 git stash
 git checkout osint-MongoDB
 source venv/bin/activate
 python3 main.py
-git stash
 git checkout Firewall-PolicyEngine
+git stash pop
 ```
 
-### Step 7 — Run the Firewall Enforcer
+### Step 5a — Single Enforcement Pass
 
 ```bash
-# IMPORTANT: Always use venv python with sudo — never plain sudo python
 sudo venv/bin/python main.py
 ```
+
+### Step 5b — Continuous Daemon Mode (Week 4)
+
+```bash
+# Poll MongoDB every 60 seconds (default)
+sudo venv/bin/python main.py --daemon
+
+# Poll every 2 minutes
+sudo venv/bin/python main.py --daemon --interval 120
+```
+
+---
+
+## Rollback — False Positive Recovery (Week 4)
+
+If a legitimate IP was accidentally blocked, the SOC analyst uses `rollback.py`:
+
+```bash
+# Unblock a specific IP
+sudo venv/bin/python rollback.py 185.220.101.47
+
+# List all currently blocked IPs
+sudo venv/bin/python rollback.py --list
+```
+
+**What rollback does:**
+1. Removes the `iptables -D INPUT -s <IP> -j DROP` rule
+2. Updates MongoDB `status` → `"false_positive"`, `blocked` → `False`
+3. Writes an `IP_UNBLOCKED` event to `firewall_events.json` for Kibana
 
 ---
 
@@ -157,17 +176,11 @@ sudo venv/bin/python main.py
 ============================================================
   BankSec-TIP  |  Firewall Policy Engine
 ============================================================
-[IOC Extractor] Reading active threats from MongoDB...
-[IOC Extractor] Found 999 active threats ready for enforcement.
-
-[*] Starting Firewall Enforcer...
-  [+] Blocked: 185.255.100.198  (risk=100)
-  [+] Blocked: 193.163.125.16   (risk=100)
-  [+] Blocked: 202.145.0.18     (risk=100)
-  [+] Blocked: 45.142.193.12    (risk=100)
-  ...
-[Firewall Enforcer] Done – 994 IPs blocked.
-
+2026-06-05T10:00:00 [__main__] INFO: IOC Extractor: active=994  already_blocked=0  false_positives=0
+2026-06-05T10:00:00 [firewall_enforcer] INFO: Enforcer: blocked 185.255.100.198 (risk=100)
+2026-06-05T10:00:00 [firewall_enforcer] INFO: Enforcer: blocked 193.163.125.16 (risk=100)
+...
+2026-06-05T10:00:05 [firewall_enforcer] INFO: Enforcer: pass complete — 994 IPs blocked.
 ============================================================
   Firewall enforcement complete.
   Check blocked_ips.log and firewall_events.json
@@ -185,35 +198,14 @@ sudo iptables -L INPUT -n | grep DROP | wc -l
 # Count blocked IPs in log
 wc -l blocked_ips.log
 
-# Count firewall events (should match blocked_ips.log)
+# Count firewall events
 wc -l firewall_events.json
 
 # View last 10 blocked IPs
 tail -10 blocked_ips.log
 
 # View last 5 JSON events
-tail -5 firewall_events.json
-```
-
-All three counts should match. ✅
-
----
-
-## Rollback a False Positive
-
-If a legitimate IP was accidentally blocked:
-
-```bash
-# Method 1 — Python rollback function
-python3 -c "
-import sys
-sys.path.insert(0, 'Firewall-PolicyEngine')
-from firewall_enforcer import rollback_ip
-rollback_ip('1.2.3.4')
-"
-
-# Method 2 — Direct iptables removal
-sudo iptables -D INPUT -s 1.2.3.4 -j DROP
+tail -5 firewall_events.json | python3 -m json.tool
 ```
 
 ---
@@ -221,41 +213,22 @@ sudo iptables -D INPUT -s 1.2.3.4 -j DROP
 ## Log Files
 
 | File | Contents | Committed to Git |
-|------|----------|-----------------|
-| `blocked_ips.log` | Plain text audit trail — one IP per line with timestamp | ❌ No (runtime file) |
-| `firewall_events.json` | Structured JSON events for Filebeat/ELK pipeline | ❌ No (runtime file) |
+|------|----------|-----------------:|
+| `blocked_ips.log` | Plain text audit trail — timestamp + IP per line | ❌ No |
+| `firewall_events.json` | Structured JSON events for Filebeat/ELK | ❌ No |
+| `logs/app.log` | Structured application log (all modules) | ❌ No |
 
-> Both files are in `.gitignore` by design. They are generated at runtime and
-> picked up by the ELK branch via Filebeat.
-
----
-
-## Clearing Logs (Fresh Run)
-
-```bash
-# Fix ownership if files were created by sudo
-sudo chown $USER:$USER blocked_ips.log firewall_events.json
-
-# Clear for a fresh run
-echo -n "" > blocked_ips.log
-echo -n "" > firewall_events.json
-
-# Run again
-sudo venv/bin/python main.py
-```
+All three are runtime files and are excluded by `.gitignore`.
 
 ---
 
-## Verified Results
+## MongoDB Status Values
 
-| Metric | Count |
-|--------|-------|
-| Active threats in MongoDB | 999 |
-| IPs blocked via iptables | 994 |
-| Lines in blocked_ips.log | 994 |
-| Lines in firewall_events.json | 994 |
-| Risk score 100 IPs | ~467 |
-| Risk score 80 IPs | ~527 |
+| `status` value | Meaning |
+|---------------|---------|
+| `"active"` | Threat ingested, not yet blocked |
+| `"blocked"` | iptables DROP rule applied |
+| `"false_positive"` | Rolled back by SOC analyst via `rollback.py` |
 
 ---
 
@@ -263,12 +236,12 @@ sudo venv/bin/python main.py
 
 | Error | Fix |
 |-------|-----|
-| `mongod.service not found` | `sudo systemctl start mongodb` (Kali uses `mongodb` not `mongod`) |
+| `mongod.service not found` | `sudo systemctl start mongodb` (Kali uses `mongodb`) |
 | `No module named 'pymongo' with sudo` | Use `sudo venv/bin/python main.py` — never `sudo python` |
 | `permission denied: blocked_ips.log` | `sudo chown $USER:$USER blocked_ips.log` |
 | `0 IPs blocked` | MongoDB threats collection is empty — run osint-MongoDB branch first |
-| `DuplicateKeyError on indicator_1` | `mongo threat_intelligence --eval "db.threats.dropIndex('indicator_1')"` |
-| `firewall_events.json duplicates` | Clear file: `echo -n "" > firewall_events.json` then re-run |
+| `Rollback: IP not found in MongoDB` | IP was never ingested; check spelling |
+| `iptables: No chain/target/match by that name` | Rule may not exist; verify with `sudo iptables -L INPUT -n` |
 
 ---
 
@@ -276,43 +249,29 @@ sudo venv/bin/python main.py
 
 | Technology | Version | Purpose |
 |-----------|---------|---------|
-| Python | 3.10+ | Firewall enforcement logic |
+| Python | 3.10+ | Enforcement logic, rollback, daemon |
 | PyMongo | 4.17.0 | MongoDB driver |
 | Linux iptables | System | Network-level IP blocking |
-| subprocess | Built-in | Execute system iptables commands |
-| python-dotenv | 1.2.2 | Secure environment variable management |
+| subprocess | Built-in | Execute iptables commands |
+| python-dotenv | 1.2.2 | Secure environment variables |
 | MongoDB | 7.0 | Source of normalised threat data |
-| Kali Linux | 2024+ | Security-focused operating system |
+| Kali Linux | 2024+ | Security OS |
 
 ---
 
 ## Git Commit Guidelines
 
 ```bash
-# Feature
-git commit -m "feat: add rate-limited daemon mode to firewall enforcer"
-
-# Bug fix
-git commit -m "fix: resolve permission denied on blocked_ips.log"
-
-# Maintenance
-git commit -m "chore: clear stale firewall_events from previous test run"
-
-# Testing
-git commit -m "test: verify 994 IPs blocked with matching log counts"
+git commit -m "feat: add rollback.py for SOC analyst false positive recovery"
+git commit -m "feat: add daemon mode with --daemon and --interval flags"
+git commit -m "feat: implement centralised logging in logs/logs.py"
+git commit -m "fix: replace utcnow() with timezone-aware datetime.now(UTC)"
+git commit -m "fix: update MongoDB status to blocked/false_positive on enforce/rollback"
+git commit -m "docs: update README with Week 4 rollback and daemon usage"
 ```
 
-> ⚠️ Direct commits to `main` are forbidden. Always work on `Firewall-PolicyEngine` branch.
-> Evaluation requires commits spread across all 4 weeks — commit every meaningful change.
-
----
-
-## Next Steps (Weeks 5 & 6)
-
-- Continuous daemon mode — poll MongoDB every 5 minutes for new threats
-- `rollback.py` CLI tool — `python rollback.py --ip 1.2.3.4`
-- PCI-DSS compliance report generator
-- GitHub Actions lint workflow
+> ⚠️ Direct commits to `main` are forbidden. Use the `Firewall-PolicyEngine` branch.
+> All 4 weeks must have GitHub commits for evaluation.
 
 ---
 ## Future Enhancements
