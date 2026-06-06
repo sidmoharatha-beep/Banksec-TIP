@@ -128,12 +128,50 @@ The platform stores threat intelligence data in the following collections:
 These collections support ingestion, enrichment, and IOC extraction workflows.
 
 ---
-## Directory Structure
+## Project Directory Structure
 
-feeds/       -> OSINT integrations
-database/    -> MongoDB handlers
-utils/       -> Helper functions
+```text
+Banksec-TIP/
+│
+├── database/
+│   └── mongo_handler.py
+│      Handles MongoDB connection and collection management.
+│
+├── feeds/
+│   ├── alienvault_feed.py
+│   ├── abuseipdb_feed.py
+│   ├── virustotal_feed.py
+│   └── shodan_feed.py
+│      OSINT feed integrations and threat intelligence ingestion.
+│
+├── utils/
+│   └── ioc_extractor.py
+│      Extracts Indicators of Compromise (IOCs) from collected data.
+│
+├── main.py
+│   Main pipeline entry point for OSINT ingestion and enrichment.
+│
+├── requirements.txt
+│   Project dependencies.
+│
+├── .env
+│   Stores API keys and environment variables (not committed to Git).
+│
+└── README.md
+    Project documentation and setup instructions.
+```
+---
+### Directory Overview
 
+| Directory/File | Description |
+|----------------|-------------|
+| `database/` | MongoDB connection and database operations |
+| `feeds/` | OSINT feed collectors and enrichment modules |
+| `utils/` | IOC extraction and helper utilities |
+| `main.py` | Executes the complete threat intelligence pipeline |
+| `requirements.txt` | Python package dependencies |
+| `.env` | API key configuration file |
+| `README.md` | Project documentation |
 ---
 ## Setup & Installation
 
