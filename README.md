@@ -78,9 +78,17 @@ ABUSEIPDB_API_KEY=your_key_here
 | 4 | **Shodan** | Finds internet-exposed services (MongoDB, Elasticsearch, MySQL) | 70 |
 
 ---
+## Current Feed Coverage
 
+- AlienVault OTX: IOC ingestion
+- AbuseIPDB: Malicious IP blacklist
+- VirusTotal: Reputation enrichment
+- Shodan: Internet-exposed asset discovery
+
+---
 ## Project Structure
 
+<<<<<<< Updated upstream
 ```
 Banksec-TIP/
 ├── feeds/
@@ -102,6 +110,12 @@ Banksec-TIP/
 ├── .gitignore
 └── README.md
 ```
+=======
+Banksec-TIP/ ├── feeds/ │ ├── alienvault.p
+y │ ├── abuseipdb.py │ ├── virustotal.py │ ├── shodan_feed.py │ └── init.py ├── database/ │ ├── mongo_handler.py │ └── init.py ├── logs/ │ └── init.py ├── screenshots/ │ ├── elasticsearch-running.png │ ├── kibana-home.png │ ├── kibana-discover.png │ ├── siem-dashboard.png │ └── docker-containers.png ├── elastic_sync.py ├── filebeat_logger.py ├── docker-compose.yml ├── filebeat.yml ├── main.py ├── requirements.txt ├── .env.example ├── .gitignore └── README.md
+
+
+>>>>>>> Stashed changes
 ---
 ## MongoDB Collections
 
