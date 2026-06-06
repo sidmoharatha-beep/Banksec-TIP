@@ -94,7 +94,7 @@ Banksec-TIP/
 git clone https://github.com/sidmoharatha-beep/Banksec-TIP.git
 cd Banksec-TIP
 git checkout Firewall-PolicyEngine
-```
+
 
 ### Step 2 — Create Virtual Environment
 
@@ -102,7 +102,6 @@ git checkout Firewall-PolicyEngine
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-```
 
 ### Step 3 — Configure Environment Variables
 
