@@ -126,8 +126,15 @@ The platform stores threat intelligence data in the following collections:
 - threats
 
 These collections support ingestion, enrichment, and IOC extraction workflows.
----
 
+---
+## Directory Structure
+
+feeds/       -> OSINT integrations
+database/    -> MongoDB handlers
+utils/       -> Helper functions
+
+---
 ## Setup & Installation
 
 ### Prerequisites
