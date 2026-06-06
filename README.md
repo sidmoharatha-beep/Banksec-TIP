@@ -334,7 +334,7 @@ Evaluation requires commits spread across all 4 weeks.
 
 ---
 
-## Next Steps (Weeks 5 & 6)
+## Next Steps (Weeks 3 & 4)
 
 - MongoDB Change Stream for real-time sync
 - Kibana alerting rule — trigger when 5+ critical IPs indexed in 10 minutes
