@@ -40,6 +40,28 @@ Shodan          ──┘    ioc_extractor.py
 - Shodan
 
 ---
+## Supported IOC Types
+
+The OSINT ingestion pipeline is designed to collect, normalize, and process multiple types of Indicators of Compromise (IOCs) from integrated threat intelligence sources.
+
+| IOC Type | Description |
+|-----------|-------------|
+| IPv4 Addresses | Malicious or suspicious IP addresses associated with threat activity |
+| Domains | Known malicious domains used for phishing, malware delivery, or command-and-control operations |
+| Hostnames | Threat-related hostnames discovered through intelligence feeds |
+| URLs | Malicious URLs linked to phishing campaigns, malware distribution, or exploit kits |
+| File Hashes | MD5, SHA1, and SHA256 hashes used to identify malicious files and malware samples |
+
+### Intelligence Sources
+
+The above IOC types are collected and enriched using:
+
+- AlienVault OTX
+- AbuseIPDB
+- VirusTotal
+- Shodan
+
+These indicators are stored in MongoDB for enrichment, correlation, and further analysis within the Threat Intelligence Platform (TIP).
 
 ## Required Environment Variables
 
