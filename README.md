@@ -1,12 +1,12 @@
-# BankSec-TIP — Firewall Policy Engine Branch
-**Assigned to: Sidharth Ranjan Moharatha**
+# BankSec-TIP — Firewall Policy Engine Branch #
+**Assigned to: Sidharth Ranjan Maharatha**
 **Infotact Technical Internship Program | Finance & Banking Projects**
 
 ---
 
 ## Overview
 
-This branch implements **Weeks 3 & 4** of the Advanced Threat Intelligence Platform (TIP).
+This branch implements **Weeks 1 , 2 , 3 & 4** of the Advanced Threat Intelligence Platform (TIP).
 It reads the normalised threat data produced by the **osint-MongoDB branch** from MongoDB
 and dynamically enforces network-level firewall rulees using Linux iptables.
 
@@ -132,13 +132,13 @@ git checkout Firewall-PolicyEngine
 git stash pop
 ```
 
-### Step 5a — Single Enforcement Pass
+### Step 5.1 — Single Enforcement Pass
 
 ```bash
 sudo venv/bin/python main.py
 ```
 
-### Step 5b — Continuous Daemon Mode (Week 4)
+### Step 5.2 — Continuous Daemon Mode (Week 4)
 
 ```bash
 # Poll MongoDB every 60 seconds (default)
@@ -150,7 +150,7 @@ sudo venv/bin/python main.py --daemon --interval 120
 
 ---
 
-## Rollback — False Positive Recovery (Week 4)
+## Rollback — False Positive Recovery
 
 If a legitimate IP was accidentally blocked, the SOC analyst uses `rollback.py`:
 
