@@ -14,7 +14,7 @@ Every malicious IP with a risk score ≥ 70 is automatically blocked at the OS l
 with a complete audit trail written to structured JSON logs for the **ELKStack-Visualization**
 branch** to pick up via Filebeat.
 
-**Week 4 additions:**
+**additions:**
 - `rollback.py` — SOC analyst false-positive recovery CLI tool
 - Daemon mode — continuous polling via `--daemon` flag
 - Centralised logging (`logs/logs.py`) replacing all `print()` calls
@@ -269,7 +269,7 @@ git commit -m "fix: update MongoDB status to blocked/false_positive on enforce/r
 git commit -m "docs: update README with Week 4 rollback and daemon usage"
 ```
 
-> ⚠️ Direct commits to `main` are forbidden. Use the `Firewall-PolicyEngine` branch.
+> Direct commits to `main` are forbidden. Use the `Firewall-PolicyEngine` branch.
 > All 4 weeks must have GitHub commits for evaluation.
 
 ---
