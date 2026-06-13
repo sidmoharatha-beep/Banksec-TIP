@@ -10,7 +10,7 @@ This branch implements **Weeks 1 , 2 , 3 & 4** of the Advanced Threat Intelligen
 It reads the normalised threat data produced by the **osint-MongoDB branch** from MongoDB
 and dynamically enforces network-level firewall rulees using Linux iptables.
 
-Every malicious IP with a risk score ≥ 70 is automatically blocked at the OS level,
+Every malicious IP with a risk score ≥ 70 is automatically blocked at the OS level and,
 with a complete audit trail written to structured JSON logs for the **ELKStack-Visualization**
 branch** to pick up via Filebeat.
 
