@@ -283,3 +283,11 @@ Planned improvements for the policy enforcement engine:
 - Firewall rule analytics and reporting
 *Part of the Infotact Technical Internship Program — Finance & Banking Track*
 *Bengaluru, Karnataka | 2026*
+
+## Repository Structure
+
+- osint-MongoDB
+- ELKStack-Visualization
+- Firewall-PolicyEngine
+
+Integrated Threat Intelligence Platform for Finance & Banking Security Monitoring.
